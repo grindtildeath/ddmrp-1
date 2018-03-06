@@ -287,6 +287,7 @@ class StockWarehouseOrderpoint(models.Model):
         compute="_compute_order_spike_threshold", digits=UNIT, store=True)
     qualified_demand = fields.Float(string="Qualified demand", digits=UNIT,
                                     readonly=True)
+    incoming_qty = fields.Float(string="Incoming quantity", readonly=True)
     net_flow_position = fields.Float(string="Net flow position", digits=UNIT,
                                      readonly=True)
     net_flow_position_percent = fields.Float(
@@ -507,6 +508,25 @@ class StockWarehouseOrderpoint(models.Model):
                 ('date', '<=', date_to)]
 
     @api.multi
+    def _search_stock_moves_incoming_domain(self):
+        self.ensure_one()
+        horizon = self.dlt
+        if not horizon:
+            date_to = fields.Date.to_string(fields.date.today())
+
+        else:
+            date_to = fields.Date.to_string(fields.date.today() + timedelta(
+                days=horizon))
+        locations = self.env['stock.location'].search(
+            [('id', 'child_of', [self.location_id.id])])
+        return [('product_id', '=', self.product_id.id),
+                ('state', 'in', ['draft', 'waiting', 'confirmed',
+                                 'assigned']),
+                ('location_id', 'not in', locations.ids),
+                ('location_dest_id', 'in', locations.ids),
+                ('date', '<=', date_to)]
+
+    @api.multi
     def _calc_qualified_demand(self):
         for rec in self:
             rec.refresh()
@@ -529,12 +549,21 @@ class StockWarehouseOrderpoint(models.Model):
         return True
 
     @api.multi
+    def _calc_incoming_qty(self):
+        for rec in self:
+            rec.incoming_qty = 0.0
+            domain = rec._search_stock_moves_incoming_domain()
+            moves = self.env['stock.move'].search(domain)
+            rec.incoming_qty = moves.mapped('product_qty')
+        return True
+
+    @api.multi
     def _calc_net_flow_position(self):
         for rec in self:
             rec.refresh()
             rec.net_flow_position = \
                 rec.product_location_qty_available_not_res + \
-                rec.incoming_location_qty - rec.qualified_demand
+                rec.incoming_qty - rec.qualified_demand
             usage = 0.0
             if rec.top_of_green:
                 usage = round((rec.net_flow_position /
@@ -605,6 +634,7 @@ class StockWarehouseOrderpoint(models.Model):
         enhance extensibility."""
         self.ensure_one()
         self._calc_qualified_demand()
+        self._calc_incoming_qty()
         self._calc_net_flow_position()
         self._calc_planning_priority()
         self._calc_execution_priority()
