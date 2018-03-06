@@ -87,7 +87,7 @@
                 <button name="%(stock.do_view_procurement_op)d"
                         position="after">
                     <button string="Refresh Buffer" name="cron_actions" class="oe_stat_button"
-							icon="fa-refresh" type="object"/>
+                            icon="fa-refresh" type="object"/>
                 </button>
                 <button name="%(stock.do_view_procurement_op)d"
                         position="attributes">
@@ -210,14 +210,14 @@
                            bg_color="red:execution_priority_level=='1_red';yellow:execution_priority_level=='2_yellow';green:execution_priority_level == '3_green'"
                            fg_color="white:execution_priority_level=='1_red';black:execution_priority_level=='2_yellow';white:execution_priority_level == '3_green'"/>
                     <button string="Refresh Buffer"
-							name="cron_actions"
-							icon="fa-refresh" type="object"/>
+                            name="cron_actions"
+                            icon="fa-refresh" type="object"/>
                     <field name="incoming_qty" string="Incoming within DLT"/>
                     <field name="incoming_location_qty"
                            string="Total Incoming"/>
                     <button string="Open Non-completed Moves"
-							name="open_moves"
-							icon="gtk-open" type="object"/>
+                            name="open_moves"
+                            icon="gtk-open" type="object"/>
                     <field name="qualified_demand"/>
                     <field name="net_flow_position"/>
                     <field name="procure_recommended_qty"/>
@@ -225,10 +225,10 @@
                     <field name="procure_recommended_date"/>
                     <button string="Create Procurement"
                             name="%(stock_orderpoint_manual_procurement.act_make_procurement_from_orderpoint)d"
-							icon="gtk-execute" type="action"/>
+                            icon="gtk-execute" type="action"/>
                     <button string="Procurements"
-							name="%(procurement.procurement_action)d"
-							icon="gtk-open" type="action"
+                            name="%(procurement.procurement_action)d"
+                            icon="gtk-open" type="action"
                             domain="[('orderpoint_id','=', active_id)]"
                             context="{'search_default_orderpoint_id': [active_id]}"/>
                     <field name="top_of_red"/>
