@@ -15,6 +15,12 @@
                         <field name="history_chart" widget="bokeh_chart" nolabel="1"/>
                     </div>
                 </page>
+                <page name="execution_history" string="Execution History">
+                    <div>
+                        <field name="execution_history_chart"
+                               widget="bokeh_chart" nolabel="1"/>
+                    </div>
+                </page>
             </notebook>
         </field>
     </record>
